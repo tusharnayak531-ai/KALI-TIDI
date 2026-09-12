@@ -1,0 +1,24 @@
+databases:
+  - name: kali-tidi-royale-db
+    plan: free
+    region: singapore
+    databaseName: kalitidi
+    user: kalitidi
+
+services:
+  - type: web
+    name: kali-tidi-royale-v3
+    runtime: python
+    plan: free
+    region: singapore
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 1 --threads 100 --timeout 120 -b 0.0.0.0:$PORT app:app
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kali-tidi-royale-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true

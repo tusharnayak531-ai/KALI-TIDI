@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07130f">
+  <meta name="description" content="Kali Tidi Royale — premium online Kali Tidi card game">
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="icon" href="/static/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/static/style.css">
+  <title>Kali Tidi Royale V3</title>
+</head>
+<body>
+  <div class="ambient a1"></div><div class="ambient a2"></div>
+  <header class="topbar">
+    <button class="brand" id="brandBtn" type="button" aria-label="Go to lobby">
+      <span class="logo-card"><b>3</b><i>♠</i></span>
+      <span><strong>KALI TIDI</strong><small>ROYALE V3 · ONLINE</small></span>
+    </button>
+    <nav class="topnav">
+      <button type="button" class="nav-btn active" data-view="lobby">Play</button>
+      <button type="button" class="nav-btn" data-view="leaderboard">Leaderboard</button>
+      <button type="button" class="nav-btn" data-view="tournaments">Tournaments</button>
+    </nav>
+    <div class="user-zone">
+      <span id="connectionPill" class="connection-pill offline"><i></i><span>Connecting</span></span>
+      <button id="authBtn" class="ghost-btn" type="button">Login</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section id="lobbyView" class="view active">
+      <div class="hero">
+        <div>
+          <span class="eyebrow">REAL-TIME MULTIPLAYER</span>
+          <h1>Play Kali Tidi like a premium card room.</h1>
+          <p>Create a private table, invite friends with a room code, or jump straight into a bot-filled match. Your game can reconnect after a refresh.</p>
+          <div class="hero-actions">
+            <button id="quickPlayBtn" class="gold-btn" type="button">Quick Play</button>
+            <button id="privateRoomBtn" class="dark-btn" type="button">Create Private Room</button>
+          </div>
+        </div>
+        <div class="hero-card-stack" aria-hidden="true">
+          <div class="hero-card back one"></div><div class="hero-card back two"></div>
+          <div class="hero-card face"><span>3</span><b>♠</b><small>KALI TIDI</small></div>
+        </div>
+      </div>
+
+      <div class="section-title"><div><span class="eyebrow">GAME MODE</span><h2>Choose your table</h2></div><span class="tiny-note">6P & 8P use the 500-point two-deck rules.</span></div>
+      <div id="modeGrid" class="mode-grid"></div>
+
+      <div class="lobby-grid">
+        <article class="panel join-panel">
+          <span class="eyebrow">FRIENDS TABLE</span><h3>Join with room code</h3>
+          <p>Enter the six-character code your friend sends you.</p>
+          <form id="joinForm" class="join-form"><input id="roomCodeInput" maxlength="6" autocomplete="off" placeholder="ABC123" aria-label="Room code"><button class="gold-btn" type="submit">Join</button></form>
+        </article>
+        <article class="panel profile-teaser">
+          <span class="eyebrow">YOUR PROFILE</span><h3 id="profileName">Playing as Guest</h3>
+          <div class="mini-stats"><div><b id="profileRating">—</b><span>Rating</span></div><div><b id="profileWins">—</b><span>Wins</span></div><div><b id="profileLevel">—</b><span>Level</span></div></div>
+          <button id="profileLoginBtn" class="link-btn" type="button">Login to save progress →</button>
+        </article>
+      </div>
+    </section>
+
+    <section id="leaderboardView" class="view">
+      <div class="section-title"><div><span class="eyebrow">RANKED</span><h2>Royale Leaderboard</h2></div><button id="refreshLeaderboard" class="ghost-btn" type="button">Refresh</button></div>
+      <div class="panel table-panel"><div id="leaderboardList" class="leaderboard-list"></div></div>
+    </section>
+
+    <section id="tournamentsView" class="view">
+      <div class="section-title"><div><span class="eyebrow">EVENTS</span><h2>Tournament Hub</h2></div><button id="createTournamentBtn" class="gold-btn" type="button">Create Tournament</button></div>
+      <div id="tournamentGrid" class="tournament-grid"></div>
+    </section>
+
+    <section id="roomView" class="view">
+      <div class="room-head">
+        <button id="leaveRoomBtn" class="ghost-btn" type="button">← Lobby</button>
+        <div class="room-code-box"><span>ROOM CODE</span><b id="roomCode">------</b><button id="copyRoomBtn" type="button">Copy</button></div>
+        <div class="room-tags"><span id="roomModeTag">6 Player</span><span id="roomRankedTag">Casual</span></div>
+      </div>
+
+      <section id="waitingRoom" class="waiting-room panel">
+        <div class="section-title"><div><span class="eyebrow">PRIVATE TABLE</span><h2>Waiting for players</h2><p>Share the code. Empty seats will become bots when the host starts.</p></div><button id="startRoomBtn" class="gold-btn" type="button">Start Game</button></div>
+        <div id="waitingSeats" class="waiting-seats"></div>
+      </section>
+
+      <section id="gameRoom" class="game-room hidden">
+        <div class="match-strip">
+          <div><span>Round</span><b id="roundNo">1</b></div><div><span>Contract</span><b id="contractText">—</b></div><div><span>PowerHouse</span><b id="trumpText">—</b></div><div><span>Tricks</span><b id="trickCount">0 / 13</b></div><div><span>Team points</span><b id="teamPoints">0 – 0</b></div>
+        </div>
+
+        <div class="table-rim"><div id="felt" class="felt">
+          <div class="watermark">♠</div>
+          <div id="seatLayer"></div>
+          <div id="trickLayer" class="trick-layer"></div>
+          <div class="center-seal"><b>3♠</b><span id="centerStatus">KALI TIDI</span></div>
+        </div></div>
+
+        <div id="partnerStrip" class="partner-strip hidden"><div><span class="eyebrow">CALLED PARTNERS</span><strong>Secret team</strong></div><div id="partnerSlots" class="partner-slots"></div></div>
+
+        <div class="game-lower">
+          <section class="hand-panel panel">
+            <div class="section-title compact"><div><span class="eyebrow">YOUR HAND</span><h3 id="turnHint">Waiting…</h3></div><span id="viewerSeatLabel" class="tiny-note"></span></div>
+            <div id="hand" class="hand"></div>
+          </section>
+          <aside class="side-stack">
+            <section id="actionPanel" class="panel action-panel"><span class="eyebrow">ACTION</span><div id="actionContent"></div></section>
+            <section class="panel feed-panel"><div class="section-title compact"><div><span class="eyebrow">LIVE</span><h3>Game feed</h3></div></div><div id="feed" class="feed"></div></section>
+          </aside>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="authModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card auth-card"><button class="close-x" data-close="authModal" type="button">×</button><span class="eyebrow">PLAYER ACCOUNT</span><h2>Save your rank & match stats</h2>
+      <div class="tab-row"><button class="tab active" data-auth-tab="login" type="button">Login</button><button class="tab" data-auth-tab="register" type="button">Create account</button></div>
+      <form id="authForm" class="form-stack"><input id="authUsername" placeholder="Username" autocomplete="username"><input id="authPassword" type="password" placeholder="Password" autocomplete="current-password"><button class="gold-btn" type="submit">Continue</button></form>
+      <p class="modal-note">You can still play casual games as a guest. Ranked games and tournament progress require an account.</p>
+    </div>
+  </div>
+
+  <div id="createRoomModal" class="modal hidden"><div class="modal-card"><button class="close-x" data-close="createRoomModal" type="button">×</button><span class="eyebrow">CREATE TABLE</span><h2>Room settings</h2>
+    <label class="field-label">Mode</label><select id="createMode"></select>
+    <label class="switch-row"><span><b>Ranked room</b><small>Requires 2+ real players. Rating changes after each round.</small></span><input id="rankedToggle" type="checkbox"></label>
+    <button id="confirmCreateRoom" class="gold-btn full" type="button">Create Room</button></div></div>
+
+  <div id="tournamentModal" class="modal hidden"><div class="modal-card"><button class="close-x" data-close="tournamentModal" type="button">×</button><span class="eyebrow">NEW TOURNAMENT</span><h2>Create a Royale event</h2>
+    <label class="field-label">Name</label><input id="tournamentName" placeholder="Weekend Royale Cup" maxlength="48"><label class="field-label">Mode</label><select id="tournamentMode"></select><label class="field-label">Maximum players</label><input id="tournamentMax" type="number" min="4" max="64" value="32"><button id="confirmTournament" class="gold-btn full" type="button">Create Tournament</button></div></div>
+
+  <div id="resultModal" class="modal hidden"><div class="modal-card result-card"><div id="resultIcon" class="result-icon">🏆</div><span class="eyebrow">ROUND COMPLETE</span><h2 id="resultTitle">Victory</h2><p id="resultText"></p><div class="result-stats"><div><span>Bidding team</span><b id="resultBidPoints">0</b></div><div><span>Defenders</span><b id="resultDefPoints">0</b></div></div><div class="result-actions"><button id="shareResultBtn" class="dark-btn" type="button">Share Result</button><button id="nextRoundBtn" class="gold-btn" type="button">Next Round</button></div></div></div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+  <script src="/static/game.js"></script>
+</body>
+</html>

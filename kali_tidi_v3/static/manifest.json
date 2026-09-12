@@ -1,0 +1,10 @@
+{
+  "name": "Kali Tidi Royale",
+  "short_name": "KaliTidi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050c09",
+  "theme_color": "#07130f",
+  "description": "Premium online Kali Tidi card game",
+  "icons": [{"src":"/static/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
