@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: kali-tidi-v34-web
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: GAME_SERVER_URL
+        value: https://three-spades.onrender.com

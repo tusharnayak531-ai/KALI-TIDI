@@ -1,0 +1,33 @@
+const express = require('express');
+const path = require('path');
+
+const app = express();
+const port = Number(process.env.PORT || 3000);
+const publicDir = path.join(__dirname, 'public');
+const gameServer = String(process.env.GAME_SERVER_URL || 'https://three-spades.onrender.com').replace(/\/$/, '');
+
+app.disable('x-powered-by');
+app.use((req,res,next)=>{
+  res.setHeader('X-Content-Type-Options','nosniff');
+  res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy','camera=(), geolocation=(), payment=()');
+  res.setHeader('Cross-Origin-Opener-Policy','same-origin-allow-popups');
+  res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self' https:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https: wss:; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+  next();
+});
+
+// Runtime config lets Render/VPS deployments change backend without rebuilding the client.
+app.get('/config.js',(_req,res)=>{
+  res.type('application/javascript').set('Cache-Control','no-store').send(
+    `window.KNT_CONFIG={gameServer:${JSON.stringify(gameServer)}};\nwindow.KNT_FEATURES={pushConfigured:false,cloudAccounts:true,ranked:true,tournaments:true,v34:true};\n`
+  );
+});
+
+app.get('/health',(_req,res)=>res.json({ok:true,client:'web-v34.0',gameServer}));
+app.get('/ready',(_req,res)=>res.json({ok:true,version:'3.4.0'}));
+app.get('/api/runtime',(_req,res)=>res.json({version:'3.4.0',gameServer,pwa:true,redisConfigured:Boolean(process.env.REDIS_URL),databaseConfigured:Boolean(process.env.DATABASE_URL)}));
+
+app.use(express.static(publicDir,{extensions:['html'],maxAge:'1h',setHeaders:(res,file)=>{if(file.endsWith('sw.js')||file.endsWith('manifest.webmanifest'))res.setHeader('Cache-Control','no-cache');}}));
+app.get('*',(_req,res)=>res.sendFile(path.join(publicDir,'index.html')));
+
+app.listen(port,'0.0.0.0',()=>console.log(`Kaali Ni Tidi v34 web: http://127.0.0.1:${port} -> ${gameServer}`));

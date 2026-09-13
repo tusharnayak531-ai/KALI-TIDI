@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#071e17" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Kaali Ni Tidi" />
+  <meta name="description" content="Kaali Ni Tidi — premium online 3 of Spades multiplayer card game." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>Kaali Ni Tidi Premium — 3 of Spades</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="v34.css" />
+</head>
+<body class="premium-ui">
+  <div id="premiumSplash" class="premium-splash" aria-hidden="true"><div class="premium-splash-inner"><div class="premium-splash-card">3♠</div><div><span>KAALI NI TIDI</span><strong>PREMIUM TABLE</strong><small>Secure multiplayer • Live voice • Fair play</small></div></div></div>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="brand-lockup"><span class="brand-mark">3♠</span><div><div class="eyebrow">3 OF SPADES <b class="premium-brand-badge">PREMIUM</b></div><div class="brand-sub">KAALI NI TIDI</div></div></div>
+        <h1 data-i18n="title">Kaali Ni Tidi</h1>
+        <p data-i18n="subtitle">Online multiplayer card table</p>
+      </div>
+      <div class="top-actions">
+        <button id="rulesBtn" class="icon-btn" type="button" aria-label="Game rules">Rules</button>
+        <button id="langBtn" class="icon-btn" type="button" aria-label="Toggle language">ગુજરાતી</button>
+        <button id="soundBtn" class="icon-btn" type="button" aria-label="Toggle sound">🔊</button>
+        <div id="roomBadge" class="room-badge hidden"></div>
+      </div>
+    </header>
+
+
+    <nav id="premiumHomeNav" class="premium-home-nav" aria-label="Main game navigation">
+      <button type="button" data-lobby-tab="home" class="active">⌂ Home</button>
+      <button type="button" data-lobby-tab="play">♠ Play</button>
+      <button type="button" data-lobby-tab="competitive">🏆 Competitive</button>
+      <button type="button" data-lobby-tab="profile">👤 Profile</button>
+      <button type="button" data-lobby-tab="settings">⚙ Settings</button>
+    </nav>
+    <div id="resumeMatchCard" class="resume-match-card hidden"><div><b>↻ Unfinished match found</b><small>Return to your previous seat before the reconnect window closes.</small></div><button id="resumeMatchBtn" class="primary" type="button">Reconnect</button></div>
+
+    <section id="profilePanel" class="panel profile-panel lobby-profile">
+      <div class="profile-intro">
+        <div class="eyebrow" data-i18n="profile">PLAYER PROFILE</div>
+        <h2 data-i18n="quickLogin">Quick login</h2>
+        <p class="muted" data-i18n="profileHelp">Your name and avatar are saved on this browser.</p>
+      </div>
+      <div class="profile-controls">
+        <div class="profile-identity">
+          <div id="avatarPreview" class="profile-avatar-preview" aria-hidden="true">😎</div>
+          <label><span data-i18n="yourName">Your name</span>
+            <input id="profileName" maxlength="18" placeholder="Tushar" autocomplete="nickname" />
+          </label>
+        </div>
+        <div class="avatar-block">
+          <div class="avatar-heading"><span class="label-text" data-i18n="avatar">Avatar</span><small>Tap to choose</small></div>
+          <div id="avatarPicker" class="avatar-picker" role="radiogroup" aria-label="Choose avatar"></div>
+        </div>
+        <button id="saveProfileBtn" class="primary save-profile-btn" type="button" data-i18n="saveProfile">Save profile</button>
+      </div>
+    </section>
+
+    <section id="homeScreen" class="panel home-grid lobby-home">
+      <div class="hero lobby-hero">
+        <div class="hero-card-stack" aria-hidden="true"><span>3♠</span><span>A♠</span><span>K♥</span></div>
+        <div class="big-spade">♠</div>
+        <h2 data-i18n="heroTitle">Play Kaali Ni Tidi with your friends.</h2>
+        <p data-i18n="heroText">Choose 3–8 players. The 3-player, 5-player and 7-player modes remove only zero-point ranks, keeping every scoring point in play.</p>
+        <div class="rule-chips compact-chips premium-proof"><span>✦ Premium table</span><span>🎙 Live voice</span><span>✓ Fair-play audit</span><span>3–8 players</span><span>1 / 2 deck</span><span>3♠ = 30 pts</span></div>
+        <div class="hero-actions">
+          <button id="quickMatchBtn" class="primary" type="button">⚡ Quick Match</button>
+          <button id="practiceBtn" class="room-secondary-action" type="button">🎓 Practice vs Bots</button>
+          <button id="tutorialBtn" class="icon-btn" type="button">How to Play</button><button id="installPwaBtn" class="icon-btn hidden" type="button">⬇ Install Game</button>
+        </div>
+      </div>
+
+      <form id="createForm" class="form-card create-room-card">
+        <div class="room-card-icon">＋</div>
+        <div><div class="eyebrow">HOST A TABLE</div><h3 data-i18n="createRoom">Create room</h3></div>
+        <div class="player-choice-wrap">
+          <span class="label-text" data-i18n="players">Players</span>
+          <div id="playerCountButtons" class="player-count-buttons" role="group" aria-label="Player count">
+            <button type="button" class="player-count-btn" data-count="3">3P</button>
+            <button type="button" class="player-count-btn" data-count="4">4P</button>
+            <button type="button" class="player-count-btn" data-count="5">5P</button>
+            <button type="button" class="player-count-btn" data-count="6">6P</button>
+            <button type="button" class="player-count-btn" data-count="7">7P</button>
+            <button type="button" class="player-count-btn selected" data-count="8">8P</button>
+          </div>
+          <select id="playerCount" class="sr-only" aria-label="Players">
+            <option value="3">3 players · 1 reduced deck · 16 cards</option>
+            <option value="4">4 players · 1 deck · 13 cards</option>
+            <option value="5">5 players · 2 reduced decks · 16 cards</option>
+            <option value="6">6 players · 2 reduced decks · 16 cards</option>
+            <option value="7">7 players · 2 reduced decks · 8 cards</option>
+            <option value="8" selected>8 players · 2 full decks · 13 cards</option>
+          </select>
+          <div id="playerModeInfo" class="mode-info">8 players · 2 full decks · 13 cards each</div>
+          <label id="fourPlayerDeckWrap" class="four-player-deck-wrap hidden"><span>4-player deck mode</span><select id="fourPlayerDeckCount"><option value="1">1 deck · 13 cards each · 250 pts · bid 150–250</option><option value="2">2 decks · 26 cards each · 500 pts · bid 300–500</option></select></label>
+        </div>
+        <div class="private-settings-heading"><div><span class="eyebrow">PRIVATE ROOM SETTINGS</span><strong>Match format, teams, voice & table</strong></div><small>These settings are locked when the match starts.</small></div>
+        <div class="room-options-row">
+          <label class="compact-field"><span>Rule preset</span><select id="rulePreset"><option value="classic" selected>Classic</option><option value="fast">Fast</option><option value="double">Double Deck</option><option value="practice">Practice</option></select></label>
+          <label class="compact-field"><span>Turn timer</span><select id="turnTimer"><option value="30000">30 sec</option><option value="45000">45 sec</option><option value="60000" selected>60 sec</option><option value="90000">90 sec</option></select></label>
+          <label class="compact-field"><span>Spectator delay</span><select id="spectatorDelay"><option value="0">No delay</option><option value="5000" selected>5 sec</option><option value="10000">10 sec</option></select></label>
+          <label class="compact-field"><span>Series</span><select id="seriesBestOf"><option value="1" selected>Single rounds</option><option value="3">Best of 3</option><option value="5">Best of 5</option></select></label>
+          <label class="compact-field"><span>Teams</span><select id="teamMode"><option value="random" selected>Random partners each round</option><option value="fixed">Fixed teams after Round 1</option></select><small id="teamModeHint">Fixed teams are available for 4, 6 and 8 players.</small></label>
+          <label class="compact-field"><span>Table theme</span><select id="roomTableTheme"><option value="classic" selected>Classic Green</option><option value="dark">Dark</option><option value="royal">Royal Blue</option><option value="red">Red Felt</option></select></label>
+          <label class="compact-field"><span>Bot difficulty</span>
+            <select id="botDifficulty"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option></select>
+          </label>
+          <label class="compact-field"><span>Bot style</span><select id="botPersonality"><option value="balanced">Balanced</option><option value="aggressive">Aggressive</option><option value="conservative">Conservative</option><option value="partner">Partner-smart</option></select></label>
+          <label class="toggle-line"><input id="publicRoomToggle" type="checkbox" /> <span>Public room</span></label>
+          <label class="toggle-line"><input id="roomVoiceToggle" type="checkbox" checked /> <span>Allow table voice</span></label>
+          <label class="toggle-line"><input id="roomSpectatorsToggle" type="checkbox" checked /> <span>Allow spectators</span></label>
+          <label class="compact-field"><span>Room PIN (optional)</span><input id="createPin" inputmode="numeric" maxlength="8" placeholder="4–8 digits" /></label>
+        </div>
+        <button class="primary room-main-action" type="submit" data-i18n="createPrivate">Create room</button>
+        <p class="hint" data-i18n="botsHelp">Empty seats become bots when the host starts.</p>
+      </form>
+
+      <form id="joinForm" class="form-card join-room-card">
+        <div class="room-card-icon">↪</div>
+        <div><div class="eyebrow">JOIN FRIENDS</div><h3 data-i18n="joinRoom">Join room</h3></div>
+        <label><span data-i18n="roomCode">Room code</span>
+          <input id="joinCode" maxlength="5" placeholder="ABCDE" autocomplete="off" autocapitalize="characters" required />
+        </label>
+        <label><span>Room PIN (if required)</span><input id="joinPin" inputmode="numeric" maxlength="8" placeholder="Optional" /></label>
+        <div class="join-actions"><button class="room-secondary-action" type="submit" data-i18n="join">Join room</button><button id="spectateCodeBtn" class="icon-btn" type="button">👁 Spectate</button></div>
+        <p class="hint">Enter the 5-character room code from your friend.</p>
+      </form>
+    </section>
+
+    <section id="discoveryPanel" class="panel discovery-panel">
+      <div class="section-title">
+        <div><div class="eyebrow">PLAY ONLINE</div><h2>Public tables</h2><p class="muted">Join an open table or watch a game already in progress.</p></div>
+        <div class="discovery-actions"><button id="refreshRoomsBtn" class="icon-btn" type="button">↻ Refresh</button><button id="leaderboardBtn" class="icon-btn" type="button">🏆 Leaderboard</button><button id="statsBtn" class="icon-btn" type="button">📊 My Stats</button></div>
+      </div>
+      <div id="publicRooms" class="public-rooms"><div class="empty-state">No public rooms loaded yet.</div></div>
+    </section>
+
+    <section id="competitiveHub" class="panel competitive-hub">
+      <div class="section-title"><div><div class="eyebrow">V16 COMPETITIVE</div><h2>Competitive Hub</h2><p class="muted">Cloud account, ranked seasons, friends, achievements, replays and tournaments.</p></div><span id="accountBadge" class="account-badge">Guest</span></div>
+      <div class="competitive-grid">
+        <div class="hub-card" id="accountCard">
+          <h3>☁ Cloud Account</h3>
+          <div id="accountSignedOut">
+            <div class="auth-grid"><input id="accountUsername" maxlength="20" placeholder="Username" autocomplete="username" /><input id="accountPassword" type="password" minlength="6" placeholder="Password" autocomplete="current-password" /></div>
+            <div class="hub-actions"><button id="loginBtn" type="button" class="primary">Sign in</button><button id="registerBtn" type="button" class="room-secondary-action">Create account</button></div>
+          </div>
+          <div id="accountSignedIn" class="hidden"><div id="cloudProfile" class="cloud-profile"></div><div class="hub-actions"><button id="cloudSaveBtn" class="room-secondary-action" type="button">Sync profile</button><button id="logoutBtn" class="icon-btn" type="button">Sign out</button></div></div>
+        </div>
+        <div class="hub-card"><h3>⚔ Ranked</h3><div id="seasonSummary" class="hub-copy">Sign in to enter ranked matchmaking.</div><div class="ranked-controls"><select id="rankedPlayerCount"><option value="3">3 players</option><option value="4">4 players</option><option value="5">5 players</option><option value="6">6 players</option><option value="7">7 players</option><option value="8">8 players</option></select><select id="rankedDeckCount" class="hidden"><option value="1">1 deck</option><option value="2">2 decks</option></select><button id="rankedBtn" class="primary" type="button">Find Ranked Match</button><button id="rankedCancelBtn" class="icon-btn hidden" type="button">Cancel</button></div><div id="rankedStatus" class="muted"></div></div>
+        <div class="hub-card"><h3>👥 Friends</h3><div class="friend-search"><input id="friendSearchInput" maxlength="20" placeholder="Find username"/><button id="friendSearchBtn" class="icon-btn" type="button">Search</button></div><div id="friendResults" class="mini-list"></div><div id="friendList" class="mini-list"></div></div>
+        <div class="hub-card"><h3>🏅 Season & Achievements</h3><div id="achievementList" class="mini-list"><div class="muted">Sign in to sync achievements.</div></div><button id="seasonBoardBtn" class="icon-btn" type="button">Season leaderboard</button></div>
+        <div class="hub-card"><h3>🎬 Match Replays</h3><div id="replayList" class="mini-list"><div class="muted">No replays loaded.</div></div><button id="refreshReplaysBtn" class="icon-btn" type="button">Refresh replays</button></div>
+        <div class="hub-card"><h3>🏆 Tournaments</h3><div class="tournament-create"><input id="tournamentName" maxlength="18" placeholder="Tournament name"/><select id="tournamentSize"><option value="8">8 players</option><option value="16">16 players</option><option value="32">32 players</option></select><button id="createTournamentBtn" class="primary" type="button">Create</button></div><div id="tournamentList" class="mini-list"></div></div>
+        <div class="hub-card"><h3>🎨 Game Style</h3><div class="style-grid"><label>Table<select id="themeSelect"><option value="classic">Classic green</option><option value="royal">Royal blue</option><option value="midnight">Black & gold</option><option value="gujarat">Gujarati royal</option></select></label><label>Card back<select id="cardBackSelect"><option value="emerald">Emerald</option><option value="royal">Royal</option><option value="blackgold">Black & gold</option><option value="traditional">Traditional</option></select></label></div><label class="toggle-line"><input id="largeTextToggle" type="checkbox"/> Large text</label><label class="toggle-line"><input id="contrastToggle" type="checkbox"/> High contrast suits</label><button id="saveStyleBtn" class="icon-btn" type="button">Apply style</button></div>
+        <div class="hub-card"><h3>🎯 Daily Challenges</h3><div id="dailyChallenges" class="mini-list"><div class="muted">Sign in to load today’s challenges.</div></div></div><div class="hub-card"><h3>📅 Weekly Missions</h3><div id="weeklyChallenges" class="mini-list"><div class="muted">Sign in to load weekly missions.</div></div></div>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="hidden">
+      <div class="status-row">
+        <div class="status-left">
+          <span id="phaseText" class="phase-pill">Lobby</span>
+          <strong id="turnText"></strong>
+        </div>
+        <div class="voice-toolbar">
+          <span id="netStatus" class="net-status online">● Online</span>
+          <span id="pingStatus" class="ping-status">— ms</span>
+          <span id="serverHealthBadge" class="server-health good">Server good</span>
+          <span id="spectatorStatus" class="spectator-status hidden">👁 Spectating</span>
+          <span id="voiceStatus" class="voice-status">Voice off</span>
+          <button id="joinVoiceBtn" class="small-btn voice-primary" type="button">🎙 Join Voice</button>
+          <button id="muteVoiceBtn" class="small-btn hidden" type="button">🔇 Mute</button>
+          <button id="leaveVoiceBtn" class="small-btn hidden" type="button">Leave Voice</button>
+          <button id="copyCodeBtn" class="small-btn" type="button" data-i18n="copyCode">Copy room code</button><button id="shareRoomBtn" class="small-btn" type="button">↗ Share</button><button id="qrRoomBtn" class="small-btn" type="button">▦ QR</button>
+          <button id="fullscreenBtn" class="small-btn" type="button">⛶ Fullscreen</button>
+          <button id="compactBtn" class="small-btn" type="button">▣ Compact</button>
+          <button id="lastTrickBtn" class="small-btn" type="button">🂠 Last Trick</button>
+          <button id="ledgerBtn" class="small-btn" type="button">📋 Ledger</button>
+          <button id="matchSettingsBtn" class="small-btn" type="button">⚙ Match</button>
+          <button id="performanceBtn" class="small-btn" type="button">⚡ Performance</button>
+          <button id="auditBtn" class="small-btn" type="button">✓ Audit</button>
+          <button id="reclaimBtn" class="small-btn hidden" type="button">Take Back Control</button><button id="leaveRoomBtn" class="small-btn danger-btn" type="button">Leave Room</button>
+        </div>
+      </div>
+      <div id="ruleSummaryBar" class="rule-summary-bar hidden"></div>
+
+      <section id="lobbyPanel" class="panel">
+        <div class="section-title">
+          <div>
+            <h2 data-i18n="players">Players</h2>
+            <p id="lobbyHelp"></p>
+          </div>
+          <div class="lobby-actions"><button id="rankedConfirmBtn" class="primary hidden" type="button">Confirm Ranked Match</button><button id="readyBtn" class="room-secondary-action" type="button">✓ Ready</button><button id="startBtn" class="primary hidden" type="button" data-i18n="startGame">Start game</button></div>
+        </div>
+        <div id="lobbyPlayers" class="player-grid"></div>
+      </section>
+
+      <section id="tablePanel" class="table-wrap hidden">
+        <div class="game-layout">
+          <div class="table-stage">
+            <div class="table">
+              <div class="table-grain" aria-hidden="true"></div>
+              <div id="seatRing" class="seat-ring"></div>
+              <div id="contractInfoFloat" class="contract-info-float hidden" aria-live="polite"></div>
+              <div id="tableVoiceFloat" class="table-voice-float" aria-label="Table voice controls">
+                <span id="tableVoiceStatus" class="table-voice-status">🎙 Voice off</span>
+                <button id="tableVoiceJoinBtn" class="table-voice-btn" type="button">Join Voice</button>
+                <button id="tableVoiceModeBtn" class="table-voice-btn hidden" type="button">Open Mic</button>
+                <button id="tablePttBtn" class="table-voice-btn ptt-btn hidden" type="button">🎙 Hold to Talk</button>
+                <button id="tableVoiceMuteBtn" class="table-voice-btn hidden" type="button">Mute</button>
+                <button id="tableVoiceLeaveBtn" class="table-voice-btn hidden" type="button">Leave</button><button id="reactionBtn" class="table-voice-btn" type="button">😊 React</button><div id="reactionWheel" class="reaction-wheel hidden"></div>
+              </div>
+
+              <div class="premium-table-label" aria-hidden="true"><span>KAALI NI TIDI</span><b>PREMIUM</b></div>
+              <div class="center-zone">
+                <div id="trickArea" class="trick-area"></div>
+                <div id="lastTrickStrip" class="last-trick-strip hidden" aria-live="polite"></div>
+                <div class="center-hud">
+                  <div class="premium-live-chip"><i></i> LIVE TABLE</div><div id="centerMessage" class="center-message">Waiting…</div>
+                  <div id="seriesScoreBar" class="series-score-bar hidden"></div>
+                  <div class="score-strip">
+                    <div><span data-i18n="round">Round</span><strong id="roundNo">1</strong></div>
+                    <div><span data-i18n="bid">Bid</span><strong id="currentBid">—</strong></div>
+                    <div class="hukum-cell"><span data-i18n="hukum">Hukum</span><strong id="trumpText">—</strong></div>
+                    <div><span data-i18n="trick">Trick</span><strong id="trickNo">0</strong></div>
+                    <div><span id="bidderPointsLabel">Bidder pts</span><strong id="bidderPoints">0</strong></div>
+                    <div><span id="defensePointsLabel">Defense pts</span><strong id="defensePoints">0</strong></div>
+                  </div>
+                  <div id="contractProgressCenter" class="contract-progress-center hidden"></div>
+                  <div id="bidMiniStrip" class="bid-mini-strip hidden"></div>
+                </div>
+              </div>
+
+              <section id="actionPanel" class="panel action-panel"></section>
+            </div>
+
+            <section class="hand-panel">
+              <div class="hand-heading">
+                <div>
+                  <span data-i18n="yourHand">Your hand</span>
+                  <strong id="handCount">0 cards</strong>
+                </div>
+                <div class="hand-tools">
+                  <button id="arrangeHandBtn" class="hand-tool-btn" type="button">↔ Arrange</button>
+                  <select id="sortModeSelect" class="hand-sort-select" aria-label="Sort cards"><option value="suit">Suit</option><option value="rank">Rank</option><option value="points">Points</option><option value="hukum">Hukum first</option></select>
+                  <button id="sortHandBtn" class="hand-tool-btn" type="button">Auto sort</button>
+                </div>
+                <div id="legalHint" class="legal-hint"></div>
+              </div>
+              <div id="arrangeHelp" class="arrange-help hidden"></div>
+              <div id="hand" class="hand"></div>
+            </section>
+          </div>
+
+          <aside class="game-sidebar" aria-label="Game information">
+            <div class="panel scoreboard-panel side-card">
+              <div class="side-card-title"><h3 data-i18n="scoreboard">Score</h3><span class="side-live-dot">● LIVE</span></div>
+              <div id="scoreboard"></div>
+              <div id="pointDetails" class="point-details"></div>
+            </div>
+
+            <div class="panel chat-panel side-card">
+              <div class="section-title compact">
+                <h3 data-i18n="chat">Table chat</h3>
+                <div id="emojiBar" class="emoji-bar"></div>
+              </div>
+              <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+              <form id="chatForm" class="chat-form">
+                <input id="chatInput" maxlength="180" placeholder="Message…" autocomplete="off" />
+                <button type="submit" data-i18n="send" aria-label="Send message">➤</button>
+              </form>
+            </div>
+
+            <div class="panel history-panel side-card">
+              <div class="side-card-title"><h3>Bid & Trick History</h3><span>LAST 5</span></div>
+              <div class="history-tabs"><button id="bidHistoryTab" class="tiny-btn active" type="button">Bids</button><button id="trickHistoryTab" class="tiny-btn" type="button">Tricks</button></div>
+              <div id="bidHistory" class="game-history"></div>
+              <div id="trickHistory" class="game-history hidden"></div>
+            </div>
+
+            <div class="panel log-panel side-card">
+              <div class="side-card-title"><h3 data-i18n="gameLog">Game log</h3><span>↻</span></div>
+              <div id="gameLog" class="game-log"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </section>
+
+
+    <div id="rulesModal" class="rules-modal hidden" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+      <div class="rules-card">
+        <div class="section-title">
+          <div><div class="eyebrow">KALITIRI RULESET</div><h2 id="rulesTitle">Kali Teedi / Kali Tiri / 3 of Spades</h2></div>
+          <button id="rulesClose" class="icon-btn" type="button">✕</button>
+        </div>
+        <p class="rules-intro"><b>8-player mode follows the supplied KaliTiri rules page.</b> Three-, five- and seven-player tables are custom adaptations that remove only zero-point ranks so cards divide evenly without removing scoring points.</p>
+
+        <h3>Player modes</h3>
+        <div class="rules-table">
+          <div><b>3 players · custom</b><span>1 reduced deck (remove all 2s) · 48 cards · 16 cards each · 250 pts · bidder + 1 hidden partner vs 1 defender</span></div>
+          <div><b>4 players · 1-deck option</b><span>1 full deck · 52 cards · 13 each · 250 pts · bid 150–250 · 1 hidden partner</span></div>
+          <div><b>4 players · 2-deck option</b><span>2 full decks · 104 cards · 26 each · 500 pts · bid 300–500 · 1 hidden partner · 2 vs 2</span></div>
+          <div><b>5 players · custom</b><span>2 reduced decks (remove 2, 4, 6 from each) · 16 cards each · 500 pts · 2 hidden partners</span></div>
+          <div><b>6 players</b><span>2 reduced decks (remove 2s from each) · 16 cards each · 500 pts · 2 hidden partners</span></div>
+          <div><b>7 players · custom</b><span>2 reduced decks (3, 5, 10, J, Q, K, A) · 8 cards each · 500 pts · 3 hidden partners</span></div>
+          <div><b>8 players</b><span>2 full decks = 104 · 13 cards each · 500 pts · 3 hidden partners · team of 4</span></div>
+        </div>
+
+        <h3>2-deck bidding (4-player double-deck + 5–8 players)</h3>
+        <div class="rules-grid">
+          <div><span>Starting bid</span><strong>300</strong></div>
+          <div><span>Maximum bid</span><strong>500</strong></div>
+          <div><span>Minimum increase</span><strong>+5</strong></div>
+          <div><span>Partners</span><strong>3 hidden cards</strong></div>
+        </div>
+
+        <h3>Card points — detailed table</h3>
+        <div class="point-value-table">
+          <div class="pv-head"><b>Card</b><b>Each</b><b>1 deck total</b><b>2 decks total</b></div>
+          <div><span>3♠</span><span>30</span><span>30</span><strong>60</strong></div>
+          <div><span>Aces (4 per deck)</span><span>10</span><span>40</span><strong>80</strong></div>
+          <div><span>Kings (4 per deck)</span><span>10</span><span>40</span><strong>80</strong></div>
+          <div><span>Queens (4 per deck)</span><span>10</span><span>40</span><strong>80</strong></div>
+          <div><span>Jacks (4 per deck)</span><span>10</span><span>40</span><strong>80</strong></div>
+          <div><span>10s (4 per deck)</span><span>10</span><span>40</span><strong>80</strong></div>
+          <div><span>5s (4 per deck)</span><span>5</span><span>20</span><strong>40</strong></div>
+          <div><span>All other cards</span><span>0</span><span>0</span><strong>0</strong></div>
+          <div class="pv-total"><b>TOTAL POINTS</b><b></b><b>250</b><b>500</b></div>
+        </div>
+
+        <h3>v22 fair-play & control</h3>
+        <div class="rules-table">
+          <div><b>Legal move highlight</b><span>Only cards allowed by the follow-suit rule are highlighted on your turn.</span></div>
+          <div><b>Fast card play</b><span>Tap any highlighted legal card to play it immediately. No extra confirmation button is required.</span></div>
+          <div><b>Secure shuffle</b><span>The server uses a cryptographically secure Fisher–Yates shuffle and checks the deck before every deal.</span></div>
+          <div><b>Audit ID</b><span>Every round receives a unique audit ID and score/deck integrity status for dispute review.</span></div>
+        </div>
+
+        <h3>PowerHouse & trick play</h3>
+        <ol>
+          <li>The bid winner chooses one suit as the <b>PowerHouse (Hukum)</b> and explicitly chooses the exact card(s) that call the hidden partner(s).</li>
+          <li>The bid winner leads the first trick; after that, the last trick winner leads.</li>
+          <li>Everyone must follow the suit led when they can.</li>
+          <li>If you cannot follow suit, a PowerHouse card can win the trick. A non-PowerHouse off-suit discard cannot win.</li>
+          <li>If no PowerHouse is played, the highest card of the led suit wins. Card order is A, K, Q, J, 10, 9 … 2.</li>
+          <li>3♠ is a 30-point scoring card; it does not automatically outrank the lead suit or PowerHouse in this ruleset.</li>
+          <li>With duplicate cards, when the same winning card appears again, the <b>later/second identical copy wins</b>.</li>
+        </ol>
+
+        <h3>Round scoring</h3>
+        <div class="rules-table">
+          <div><b>Bidding team succeeds</b><span>Bidder + called partner(s) must score at least the bid. Example: bid 350 → 350 or more wins the contract.</span></div>
+          <div><b>Bidding team fails</b><span>If bidder + partner(s) finish below the bid, they lose the round and the opposite/defense team wins.</span></div>
+          <div><b>Opposing team</b><span>Each opposing player receives the points the opposing team captured, with no bid threshold.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tutorialModal" class="rules-modal hidden" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
+      <div class="rules-card tutorial-card">
+        <div class="section-title"><div><div class="eyebrow">NEW PLAYER GUIDE</div><h2 id="tutorialTitle">How to play Kaali Ni Tidi</h2></div><button id="tutorialClose" class="icon-btn" type="button">✕</button></div>
+        <div class="tutorial-steps">
+          <div><b>1</b><span><strong>Bid</strong><small>Bid for the points you believe your hidden team can capture.</small></span></div>
+          <div><b>2</b><span><strong>Choose Hukum</strong><small>The winning bidder chooses the PowerHouse suit and hidden partner cards.</small></span></div>
+          <div><b>3</b><span><strong>Follow suit</strong><small>Play the led suit when possible. Hukum can win when you cannot follow.</small></span></div>
+          <div><b>4</b><span><strong>Reveal partners</strong><small>A hidden partner is revealed when a called physical card is played.</small></span></div>
+          <div><b>5</b><span><strong>Beat the bid</strong><small>The bidder team must finish with points equal to or greater than the winning bid.</small></span></div>
+        </div>
+        <button id="tutorialPracticeBtn" class="primary" type="button">Start practice game</button>
+      </div>
+    </div>
+
+    <div id="statsModal" class="rules-modal hidden" role="dialog" aria-modal="true" aria-labelledby="statsTitle">
+      <div class="rules-card compact-modal">
+        <div class="section-title"><div><div class="eyebrow">PLAYER RECORD</div><h2 id="statsTitle">My Stats</h2></div><button id="statsClose" class="icon-btn" type="button">✕</button></div>
+        <div id="statsContent"></div>
+      </div>
+    </div>
+
+    <div id="leaderboardModal" class="rules-modal hidden" role="dialog" aria-modal="true" aria-labelledby="leaderboardTitle">
+      <div class="rules-card compact-modal">
+        <div class="section-title"><div><div class="eyebrow">PUBLIC RANKING</div><h2 id="leaderboardTitle">Leaderboard</h2></div><button id="leaderboardClose" class="icon-btn" type="button">✕</button></div>
+        <div id="leaderboardContent"></div>
+      </div>
+    </div>
+
+    <div id="matchSettingsModal" class="rules-modal hidden" role="dialog" aria-modal="true" aria-labelledby="matchSettingsTitle">
+      <div class="rules-card compact-modal match-settings-card">
+        <div class="section-title"><div><div class="eyebrow">TABLE CONTROLS</div><h2 id="matchSettingsTitle">Match settings</h2></div><button id="matchSettingsClose" class="icon-btn" type="button">✕</button></div>
+        <div class="match-settings-grid">
+          <label class="toggle-line"><input id="compactGameToggle" type="checkbox" checked /> Compact game mode</label>
+          <label><span>Card size</span><select id="cardSizeSelect"><option value="auto" selected>Auto fit</option><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option></select></label>
+          <label><span>Voice mode</span><select id="voiceModeSelect"><option value="open">Open mic</option><option value="ptt">Push to talk</option></select></label>
+          <label class="toggle-line"><input id="voiceAutoReconnectToggle" type="checkbox" checked /> Auto-reconnect voice</label>
+          <label><span>Card sounds <b id="cardVolumeValue">70%</b></span><input id="cardVolume" type="range" min="0" max="100" value="70" /></label>
+          <label><span>Alerts <b id="alertVolumeValue">80%</b></span><input id="alertVolume" type="range" min="0" max="100" value="80" /></label>
+          <label><span>Voice volume <b id="voiceVolumeValue">100%</b></span><input id="voiceVolume" type="range" min="0" max="100" value="100" /></label>
+          <label class="toggle-line"><input id="vibrationToggle" type="checkbox" checked /> Vibration / haptics</label>
+        </div>
+        <button id="matchSettingsSaveBtn" class="primary" type="button">Apply match settings</button>
+      </div>
+    </div>
+
+    <div id="winnerCelebration" class="winner-celebration hidden" role="dialog" aria-modal="true">
+      <div class="winner-celebration-card"><div class="winner-crown">🏆</div><span class="eyebrow">PREMIUM RESULT • SERIES COMPLETE</span><h2 id="winnerCelebrationTitle">Team wins!</h2><p id="winnerCelebrationText"></p><div id="winnerCelebrationAvatars" class="winner-celebration-avatars"></div><button id="winnerCelebrationClose" class="primary" type="button">View final table</button></div>
+      <div class="card-confetti" aria-hidden="true"><i>♠</i><i>♥</i><i>♦</i><i>♣</i><i>3♠</i><i>A♥</i><i>K♣</i><i>10♦</i></div>
+    </div>
+
+    <div id="voiceAudioContainer" class="voice-audio-container" aria-hidden="true"></div>
+  
+  <div id="cinematicOverlay" class="cinematic-overlay hidden" aria-live="assertive"><div class="cinematic-card"><span id="cinematicEyebrow">MATCH</span><strong id="cinematicTitle">3</strong><small id="cinematicSub">Get ready</small></div></div>
+  <div id="reactionLayer" class="reaction-layer" aria-hidden="true"></div>
+  <div id="maintenanceOverlay" class="maintenance-overlay hidden"><div class="maintenance-card"><div class="brand-mark">3♠</div><h2>Premium table maintenance</h2><p id="maintenanceText">A new version is being prepared.</p><button id="maintenanceRetryBtn" class="primary" type="button">Check again</button></div></div>
+  <div id="updateOverlay" class="maintenance-overlay hidden"><div class="maintenance-card"><div class="brand-mark">3♠</div><h2>Update available</h2><p id="updateText">A newer game version is available.</p><button id="updateReloadBtn" class="primary" type="button">Update now</button></div></div>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+    <div id="v16Modal" class="rules-modal hidden" role="dialog" aria-modal="true"><div class="rules-card compact-modal"><div class="section-title"><h2 id="v16ModalTitle">Details</h2><button id="v16ModalClose" class="icon-btn" type="button">✕</button></div><div id="v16ModalContent"></div></div></div>
+
+    <footer id="legalFooter" class="legal-footer"><span>Kaali Ni Tidi v3.4 Premium Web</span><div><button type="button" data-legal="rules">Rules</button><button type="button" data-legal="privacy">Privacy</button><button type="button" data-legal="terms">Terms</button><button type="button" data-legal="about">About</button></div></footer>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="bootstrap.js"></script>
+</body>
+</html>
