@@ -5,6 +5,7 @@ const DEADLINE_MS = Number(process.env.PLAYTEST_TIMEOUT_MS || 240000);
 let finished = false;
 let lastPhase = '';
 let roomCode = '';
+let roomCreated = false;
 let lastActionKey = '';
 let stateCount = 0;
 let playCount = 0;
@@ -12,6 +13,7 @@ let bidSent = false;
 let contractSent = false;
 let latestState = null;
 let lastProgressAt = Date.now();
+let lastStateSig = '';
 
 function fail(msg) {
   if (finished) return;
@@ -72,39 +74,24 @@ function choosePartnerCards(st) {
 }
 
 function stateSignature(st) {
-  return [
-    st.phase,
-    st.round,
-    st.bid?.turnIndex,
-    st.bid?.current,
-    st.turnIndex,
-    st.trickNumber,
-    st.trickResolving,
-    st.hand?.length,
-    st.players?.[st.viewerIndex]?.ready,
-    st.calledPartners?.length,
-    st.roundSummary?.bidderPoints,
-    st.roundSummary?.defensePoints
-  ].join('|');
+  return [st.phase,st.round,st.bid?.turnIndex,st.bid?.current,st.turnIndex,st.trickNumber,st.trickResolving,st.hand?.length,st.players?.[st.viewerIndex]?.ready,st.calledPartners?.length,st.roundSummary?.bidderPoints,st.roundSummary?.defensePoints].join('|');
 }
-let lastStateSig = '';
 
 function actOnState(st) {
   if (finished || !st) return;
   latestState = st;
   const sig = stateSignature(st);
-  if (sig !== lastStateSig) {
-    lastStateSig = sig;
-    lastProgressAt = Date.now();
-  }
+  if (sig !== lastStateSig) { lastStateSig = sig; lastProgressAt = Date.now(); }
 
   const me = st.players?.[st.viewerIndex];
   if (!me && !st.spectator) return;
+  if (st.phase !== lastPhase) { lastPhase = st.phase; lastActionKey = ''; console.log(`PHASE: ${st.phase}`); }
 
-  if (st.phase !== lastPhase) {
-    lastPhase = st.phase;
-    lastActionKey = '';
-    console.log(`PHASE: ${st.phase}`);
+  // createRoom can broadcast the first lobby state before its callback returns.
+  // Do not send any room actions until the createRoom acknowledgement arrives.
+  if (!roomCreated) {
+    console.log('WAIT: room creation acknowledgement');
+    return;
   }
 
   if (st.phase === 'lobby' && st.host && !st.ranked) {
@@ -114,7 +101,7 @@ function actOnState(st) {
       const key = 'lobby:ready';
       if (lastActionKey === key) return;
       lastActionKey = key;
-      console.log('ACTION: mark ready (state-driven; ack optional)');
+      console.log('ACTION: mark ready');
       fire('toggleReady', {});
       return;
     }
@@ -177,43 +164,28 @@ function actOnState(st) {
   }
 }
 
-const socket = io(SERVER, {
-  path: '/socket.io',
-  transports: ['polling', 'websocket'],
-  upgrade: true,
-  timeout: 60000,
-  reconnection: true,
-  reconnectionAttempts: 8,
-  reconnectionDelay: 1500,
-  reconnectionDelayMax: 8000
-});
+const socket = io(SERVER, {path:'/socket.io',transports:['polling','websocket'],upgrade:true,timeout:60000,reconnection:true,reconnectionAttempts:8,reconnectionDelay:1500,reconnectionDelayMax:8000});
 
 setInterval(() => {
   if (finished) return;
   const idle = Date.now() - lastProgressAt;
-  if (idle > 45000) fail(`no authoritative state progress for ${Math.round(idle/1000)}s; phase=${latestState?.phase}; room=${roomCode}; states=${stateCount}; plays=${playCount}`);
+  if (roomCreated && idle > 45000) fail(`no authoritative state progress for ${Math.round(idle/1000)}s; phase=${latestState?.phase}; room=${roomCode}; states=${stateCount}; plays=${playCount}`);
 }, 5000).unref?.();
 setTimeout(() => fail(`overall timeout; lastPhase=${lastPhase}; states=${stateCount}; plays=${playCount}`), DEADLINE_MS).unref?.();
 
 socket.on('connect', async () => {
   console.log(`CONNECTED: ${socket.id} -> ${SERVER}`);
   try {
-    const res = await emitAck('createRoom', {
-      name: 'OpenAI QA', avatar: '🧪', playerCount: 4, deckCount: 1,
-      isPublic: false, botDifficulty: 'easy', botPersonality: 'balanced', privatePin: '',
-      turnTimeoutMs: 15000, spectatorDelayMs: 0, preset: 'practice', seriesBestOf: 1,
-      teamMode: 'random', tableTheme: 'classic', voiceEnabled: false, spectatorsEnabled: false
-    }, 30000);
+    const res = await emitAck('createRoom', {name:'OpenAI QA',avatar:'🧪',playerCount:4,deckCount:1,isPublic:false,botDifficulty:'easy',botPersonality:'balanced',privatePin:'',turnTimeoutMs:15000,spectatorDelayMs:0,preset:'practice',seriesBestOf:1,teamMode:'random',tableTheme:'classic',voiceEnabled:false,spectatorsEnabled:false}, 30000);
     roomCode = res.code || '';
+    roomCreated = true;
+    lastProgressAt = Date.now();
     console.log(`ROOM_CREATED: ${roomCode}`);
+    if (latestState) setTimeout(() => { try { actOnState(latestState); } catch (e) { fail(e.stack || e.message); } }, 50);
   } catch (e) { fail(e.message); }
 });
 
-socket.on('state', st => {
-  stateCount++;
-  try { actOnState(st); } catch (e) { fail(e.stack || e.message); }
-});
-
+socket.on('state', st => { stateCount++; try { actOnState(st); } catch (e) { fail(e.stack || e.message); } });
 socket.on('connect_error', e => console.log(`CONNECT_ERROR: ${e.message}`));
 socket.on('disconnect', reason => { if (!finished) console.log(`DISCONNECT: ${reason}`); });
 socket.on('roomClosed', x => { if (!finished) fail(`room closed: ${JSON.stringify(x)}`); });
