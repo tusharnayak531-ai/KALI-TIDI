@@ -1,0 +1,20 @@
+{
+  "name": "kaali-ni-tidi-v34-premium-web",
+  "version": "3.4.1",
+  "private": true,
+  "description": "Kaali Ni Tidi v34.1 Premium Web Edition \u2014 same-origin Socket.IO proxy fix for reliable multiplayer.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "verify": "node scripts/verify-package.js",
+    "check": "node --check server.js && node --check public/bootstrap.js && node --check public/client.js && node --check public/v34.js && node --check public/sw.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^3.0.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

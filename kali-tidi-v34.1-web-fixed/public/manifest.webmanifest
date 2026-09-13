@@ -1,0 +1,22 @@
+{
+  "id":"/",
+  "name":"Kaali Ni Tidi — 3 of Spades",
+  "short_name":"Kaali Ni Tidi",
+  "start_url":"/",
+  "scope":"/",
+  "display":"standalone",
+  "display_override":["window-controls-overlay","standalone","browser"],
+  "orientation":"any",
+  "background_color":"#04150f",
+  "theme_color":"#071e17",
+  "description":"Premium online multiplayer Kaali Ni Tidi card game.",
+  "categories":["games","entertainment"],
+  "icons":[
+    {"src":"/icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"/icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ],
+  "shortcuts":[
+    {"name":"Play","short_name":"Play","url":"/?tab=play","icons":[{"src":"/icons/icon-192.png","sizes":"192x192"}]},
+    {"name":"Competitive","short_name":"Ranked","url":"/?tab=competitive","icons":[{"src":"/icons/icon-192.png","sizes":"192x192"}]}
+  ]
+}
