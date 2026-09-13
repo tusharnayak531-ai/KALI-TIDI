@@ -1,0 +1,27 @@
+name: Kali Tidi Live Round Playtest
+
+on:
+  push:
+    paths:
+      - '.github/workflows/live-round-playtest.yml'
+      - 'playtest/live_round.js'
+  workflow_dispatch:
+
+jobs:
+  play-one-round:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Socket.IO client
+        run: npm install --no-save socket.io-client@4.8.1
+      - name: Play one live practice round
+        env:
+          GAME_SERVER_URL: https://three-spades.onrender.com
+          PLAYTEST_TIMEOUT_MS: '240000'
+        run: node playtest/live_round.js
