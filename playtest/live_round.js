@@ -51,6 +51,14 @@ function fire(event, payload = {}) {
   });
 }
 
+function fireReady() {
+  console.log('EMIT: toggleReady (callback-only signature)');
+  socket.emit('toggleReady', res => {
+    if (res?.ok === false) console.log(`ACK_REJECTED: toggleReady: ${res.error || 'rejected'}`);
+    else if (res) console.log(`ACK: toggleReady ${JSON.stringify(res)}`);
+  });
+}
+
 function chooseTrump(hand = []) {
   const counts = { S: 0, H: 0, D: 0, C: 0 };
   for (const c of hand) if (counts[c.suit] != null) counts[c.suit]++;
@@ -62,13 +70,9 @@ function choosePartnerCards(st) {
   const copies = Number(st.deckCount || 1) === 2 ? [1, 2] : [1];
   const ranks = (st.availableRanks || ['2','3','4','5','6','7','8','9','10','J','Q','K','A']).slice().reverse();
   const options = [];
-  for (const copy of copies) {
-    for (const suit of ['S','H','D','C']) {
-      for (const rank of ranks) {
-        const id = `${copy}-${suit}-${rank}`;
-        if (!owned.has(id)) options.push({ copy, suit, rank });
-      }
-    }
+  for (const copy of copies) for (const suit of ['S','H','D','C']) for (const rank of ranks) {
+    const id = `${copy}-${suit}-${rank}`;
+    if (!owned.has(id)) options.push({ copy, suit, rank });
   }
   return options.slice(0, Number(st.partnerCount || 1));
 }
@@ -82,32 +86,23 @@ function actOnState(st) {
   latestState = st;
   const sig = stateSignature(st);
   if (sig !== lastStateSig) { lastStateSig = sig; lastProgressAt = Date.now(); }
-
   const me = st.players?.[st.viewerIndex];
   if (!me && !st.spectator) return;
   if (st.phase !== lastPhase) { lastPhase = st.phase; lastActionKey = ''; console.log(`PHASE: ${st.phase}`); }
-
-  // createRoom can broadcast the first lobby state before its callback returns.
-  // Do not send any room actions until the createRoom acknowledgement arrives.
-  if (!roomCreated) {
-    console.log('WAIT: room creation acknowledgement');
-    return;
-  }
+  if (!roomCreated) { console.log('WAIT: room creation acknowledgement'); return; }
 
   if (st.phase === 'lobby' && st.host && !st.ranked) {
     const othersReady = (st.players || []).filter((p, i) => i !== st.viewerIndex && !p.bot && p.connected).every(p => p.ready);
     if (!othersReady) return;
     if (!me?.ready) {
-      const key = 'lobby:ready';
-      if (lastActionKey === key) return;
-      lastActionKey = key;
+      if (lastActionKey === 'lobby:ready') return;
+      lastActionKey = 'lobby:ready';
       console.log('ACTION: mark ready');
-      fire('toggleReady', {});
+      fireReady();
       return;
     }
-    const key = 'lobby:start';
-    if (lastActionKey === key) return;
-    lastActionKey = key;
+    if (lastActionKey === 'lobby:start') return;
+    lastActionKey = 'lobby:start';
     console.log('ACTION: start game');
     fire('startGame', {});
     return;
@@ -117,8 +112,7 @@ function actOnState(st) {
     const max = Number(st.bid.max || 250);
     const key = `bid:${max}:${(st.bid.history || []).length}`;
     if (lastActionKey === key) return;
-    lastActionKey = key;
-    bidSent = true;
+    lastActionKey = key; bidSent = true;
     console.log(`ACTION: bid ${max}`);
     fire('bid', { amount: max, pass: false });
     return;
@@ -165,21 +159,14 @@ function actOnState(st) {
 }
 
 const socket = io(SERVER, {path:'/socket.io',transports:['polling','websocket'],upgrade:true,timeout:60000,reconnection:true,reconnectionAttempts:8,reconnectionDelay:1500,reconnectionDelayMax:8000});
-
-setInterval(() => {
-  if (finished) return;
-  const idle = Date.now() - lastProgressAt;
-  if (roomCreated && idle > 45000) fail(`no authoritative state progress for ${Math.round(idle/1000)}s; phase=${latestState?.phase}; room=${roomCode}; states=${stateCount}; plays=${playCount}`);
-}, 5000).unref?.();
+setInterval(() => { if (!finished && roomCreated && Date.now()-lastProgressAt>45000) fail(`no authoritative state progress for ${Math.round((Date.now()-lastProgressAt)/1000)}s; phase=${latestState?.phase}; room=${roomCode}; states=${stateCount}; plays=${playCount}`); },5000).unref?.();
 setTimeout(() => fail(`overall timeout; lastPhase=${lastPhase}; states=${stateCount}; plays=${playCount}`), DEADLINE_MS).unref?.();
 
 socket.on('connect', async () => {
   console.log(`CONNECTED: ${socket.id} -> ${SERVER}`);
   try {
     const res = await emitAck('createRoom', {name:'OpenAI QA',avatar:'🧪',playerCount:4,deckCount:1,isPublic:false,botDifficulty:'easy',botPersonality:'balanced',privatePin:'',turnTimeoutMs:15000,spectatorDelayMs:0,preset:'practice',seriesBestOf:1,teamMode:'random',tableTheme:'classic',voiceEnabled:false,spectatorsEnabled:false}, 30000);
-    roomCode = res.code || '';
-    roomCreated = true;
-    lastProgressAt = Date.now();
+    roomCode = res.code || ''; roomCreated = true; lastProgressAt = Date.now();
     console.log(`ROOM_CREATED: ${roomCode}`);
     if (latestState) setTimeout(() => { try { actOnState(latestState); } catch (e) { fail(e.stack || e.message); } }, 50);
   } catch (e) { fail(e.message); }
