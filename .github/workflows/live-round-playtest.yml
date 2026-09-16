@@ -8,9 +8,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  play-one-round:
+  play-live-round:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 7
+    strategy:
+      fail-fast: false
+      matrix:
+        player_mode: [4, 6, 8]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,8 +24,9 @@ jobs:
           node-version: '20'
       - name: Install Socket.IO client
         run: npm install --no-save socket.io-client@4.8.1
-      - name: Play one live practice round
+      - name: Play one full live round
         env:
           GAME_SERVER_URL: https://three-spades.onrender.com
-          PLAYTEST_TIMEOUT_MS: '240000'
+          PLAYER_MODE: ${{ matrix.player_mode }}
+          PLAYTEST_TIMEOUT_MS: '330000'
         run: node playtest/live_round.js
