@@ -1,0 +1,1 @@
+{"name":"ForgeFit — Gym, Diet & Workout Tracker","short_name":"ForgeFit","description":"Track workouts, meals, water, and weight. Data stays on this device.","start_url":"./index.html","scope":"./","display":"standalone","background_color":"#0c1017","theme_color":"#0c1017","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}]}
