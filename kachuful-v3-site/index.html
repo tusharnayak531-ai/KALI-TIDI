@@ -329,17 +329,7 @@ $('v3Stats').onclick=()=>{const entries=state.players.map((p,i)=>({p,i})).sort((
   watcher.observe(document.getElementById('felt'),{childList:true,subtree:true});watcher.observe(hand,{childList:true,subtree:true});refresh();
 })();
 
-/* V3 visual preferences: separate from game rules and V2 saved games. */
-try{window.v3Speed=Number(localStorage.getItem('kachu-v3-speed'))||2;window.v3Sort=localStorage.getItem('kachu-v3-sort')||'suit'}catch(e){window.v3Speed=2;window.v3Sort='suit'}
-const v3Storage=(k,v)=>{try{localStorage.setItem('kachu-v3-'+k,String(v))}catch(e){}};
-const v3Sort=$('v3Sort'),v3Speed=$('v3Speed'),v3Theme=$('v3Theme'),v3Back=$('v3Back');
-v3Sort.value=window.v3Sort;v3Sort.onchange=()=>{window.v3Sort=v3Sort.value;v3Storage('sort',window.v3Sort);render()};
-v3Speed.value=window.v3Speed;const v3SpeedText=()=>$('v3SpeedLabel').textContent=window.v3Speed+'× slow';v3SpeedText();v3Speed.oninput=()=>{window.v3Speed=Number(v3Speed.value);v3Storage('speed',window.v3Speed);v3SpeedText();document.documentElement.style.setProperty('--v3-duration',window.v3Speed)};
-function v3ThemeApply(){document.body.classList.remove('theme-royal','theme-wine','back-gold','back-night');if(v3Theme.value!=='emerald')document.body.classList.add('theme-'+v3Theme.value);if(v3Back.value!=='classic')document.body.classList.add('back-'+v3Back.value)}
-try{v3Theme.value=localStorage.getItem('kachu-v3-theme')||'emerald';v3Back.value=localStorage.getItem('kachu-v3-back')||'classic'}catch(e){}
-v3Theme.onchange=()=>{v3Storage('theme',v3Theme.value);v3ThemeApply()};v3Back.onchange=()=>{v3Storage('back',v3Back.value);v3ThemeApply()};v3ThemeApply();
-$('v3Replay').onclick=()=>{const trick=state.history[state.history.length-1];if(!trick){toast('Finish a trick first');return}const lead=trick[0].card.s,winner=trick.reduce((a,b)=>power(b.card,lead,state.trump)>power(a.card,lead,state.trump)?b:a).p;showModal('<h2>↺ Last Trick Replay</h2><p class="sub">Cards played in order</p><div id="v3ReplayCards" class="review-grid"></div><p class="modal-note">Winner: '+escapeHTML(humanLabel(winner))+'</p><button class="primary" id="v3CloseReplay">BACK TO GAME</button>');$('v3CloseReplay').onclick=()=>{hideModal();resumeAfterSettings()};trick.forEach((t,i)=>setTimeout(()=>{const n=$('v3ReplayCards');if(n)n.innerHTML+='<div class="review-entry '+(t.p===winner?'winner':'')+'"><span>'+escapeHTML(humanLabel(t.p))+'</span>'+cardMarkup(t.card,true)+'</div>'},i*650*window.v3Speed))};
-$('v3Stats').onclick=()=>{const entries=state.players.map((p,i)=>({p,i})).sort((a,b)=>b.p.score-a.p.score);const hit=roundRecords.filter(r=>r.players[0].bid===r.players[0].won).length;showModal('<h2>Match Statistics & Leaderboard</h2><p class="sub">'+roundRecords.length+' completed rounds · '+hit+' exact bids · '+(roundRecords.length?Math.round(hit/roundRecords.length*100):0)+'% accuracy</p><table class="breakdown"><thead><tr><th>Rank</th><th>Player</th><th>Points</th><th>Tricks</th></tr></thead><tbody>'+entries.map(({p,i},r)=>'<tr><td>'+(r+1)+'</td><td>'+escapeHTML(p.name)+'</td><td>'+p.score+'</td><td>'+p.won+'</td></tr>').join('')+'</tbody></table><button class="primary" id="v3CloseStats">BACK TO GAME</button>');$('v3CloseStats').onclick=()=>{hideModal();resumeAfterSettings()}};
+/* Preferences are initialized once by the primary game script. */
 </script>
 </body>
 </html>
